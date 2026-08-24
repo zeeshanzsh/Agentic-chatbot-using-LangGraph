@@ -85,13 +85,17 @@ if user_input:
     config = {"configurable": {"thread_id": st.session_state.thread_id}}
 
     def stream_tokens():
-        # stream_mode="messages" yields (chunk, metadata) per LLM token
-        for chunk, _metadata in graph.stream(
+        # stream_mode="messages" yields (chunk, metadata) per LLM token / tool result
+        for chunk, metadata in graph.stream(
             {"messages": [{"role": "user", "content": user_input}]},
             config,
             stream_mode="messages",
         ):
-            if chunk.content:
+            if metadata.get("langgraph_node") == "tools":
+                # a math tool just ran; surface which one and its result inline in the
+                # stream itself (a separate placeholder gets wiped when write_stream finishes)
+                yield f"\n\n> 🔧 used `{chunk.name}` → {chunk.content}\n\n"
+            elif chunk.content:
                 yield chunk.content
 
     with st.chat_message("assistant"):

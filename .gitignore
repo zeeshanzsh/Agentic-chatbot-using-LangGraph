@@ -1,0 +1,19 @@
+# environment / secrets
+.env
+.venv/
+venv/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# editor
+.vscode/
+.idea/
+
+# os
+.DS_Store
+
+# streamlit
+.streamlit/secrets.toml
