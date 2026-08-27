@@ -1,0 +1,22 @@
+# secrets — passed in at runtime, never baked into the image
+.env
+
+# local virtualenv / editor / vcs
+.venv/
+venv/
+.vscode/
+.idea/
+.git/
+.gitignore
+
+# python cruft
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# os / docs
+.DS_Store
+README.md
+Dockerfile
+.dockerignore
+docker-compose.yml
