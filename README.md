@@ -38,3 +38,44 @@ streamlit run chatbot/app.py
 ```bash
 python -m chatbot.main
 ```
+
+## Docker
+
+The image runs the Streamlit UI. Your `.env` (with `OPENAI_API_KEY`) is passed in
+at runtime and is never baked into the image.
+
+**docker compose (recommended):**
+
+```bash
+docker compose up --build
+```
+
+**plain docker:**
+
+```bash
+docker build -t langgraph-chatbot .
+docker run --rm -p 8501:8501 --env-file .env langgraph-chatbot
+```
+
+Then open http://localhost:8501.
+
+> Chat history is in-process RAM (`MemorySaver`), so it is lost when the
+> container stops — see the persistence note above.
+
+## CI — build & push to Docker Hub
+
+[.github/workflows/docker-publish.yml](.github/workflows/docker-publish.yml) builds the
+image on every push/PR to `main` and pushes it to Docker Hub on pushes to `main`,
+on `v*` tags, and on manual `workflow_dispatch` runs (PRs build only, no push).
+
+Set these in **Settings → Secrets and variables → Actions**:
+
+| Kind   | Name                 | Value                                                        |
+|--------|----------------------|-------------------------------------------------------------|
+| Secret | `DOCKERHUB_USERNAME` | your Docker Hub username                                     |
+| Secret | `DOCKERHUB_TOKEN`    | a Docker Hub access token (Account Settings → Security)     |
+| Variable (optional) | `IMAGE_NAME` | full repo, e.g. `myuser/agentic-chatbot`; defaults to `<username>/agentic-chatbot-langgraph` |
+
+Tags produced: `latest` (default branch), the branch name, `sha-<short>`, and
+`x.y.z` / `x.y` for `v*` git tags. Images are built for `linux/amd64` and
+`linux/arm64`.
